@@ -1,5 +1,5 @@
 """
-main.py - Entry point for Angadi Billing System
+main.py - Entry point for Neyyal Production Management System
 """
 
 from main.main_controller import MainController
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     # Set global stylesheet
     SettingsController.apply_global_styles(app)  # Default to dark mode
-    app.setApplicationName("Angadi Billing System")
+    app.setApplicationName("Neyyal Production Management System")
     # Initialize main controller
     controller = MainController(app)
     controller.run()

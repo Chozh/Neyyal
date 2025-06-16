@@ -2,7 +2,7 @@
 # Model for user authentication (stub for demonstration)
 
 from utils.DB_conn import execute_stmt, execute_stmt_return
-from login_history import LoginHistory
+from user.login_history import LoginHistory
 from configuration import DB_PATH
 from utils.Tables import TableName as T
 from typing import Optional

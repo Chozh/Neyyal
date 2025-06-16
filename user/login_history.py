@@ -1,5 +1,5 @@
 # login_history.py
-# Tracks login/logout history for users in the Angadi Billing System
+# Tracks login/logout history for users in the Neyyal Billing System
 from datetime import datetime
 from typing import Optional
 from utils.Tables import TableName as T

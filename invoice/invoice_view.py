@@ -21,7 +21,7 @@ class InvoiceDialog(QDialog):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self.setWindowTitle("Tax Invoice")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 1080, 768)
 
         # Main layout
         main_layout = QVBoxLayout(self)

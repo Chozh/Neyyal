@@ -1,5 +1,5 @@
 """
-install_app.py - Setup script for Angadi Billing System database and tables
+install_app.py - Setup script for Neyyal Billing System database and tables
 """
 
 from utils.setup_db import Setup_DB

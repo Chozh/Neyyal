@@ -2,7 +2,7 @@
 # Centralized configuration for the Angadi Billing System
 
 # DB_PATH: str = "C:\Users\%user%\AppData\Local/Andadi/db/angadi.db"
-DB_PATH: str = "angadi.db"
+DB_PATH: str = "neyyal.db"
 ICON_PATH: str = "icons/shop.png"
 
 # Company Information
