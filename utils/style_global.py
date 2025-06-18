@@ -267,3 +267,77 @@ QMenu::separator {
     margin: 4px 0;
 }
 """
+
+# --- DARK MODE TOOLBAR STYLE ---
+TOOLBAR_STYLE_DARK = """
+QToolBar {
+    background: #232f36;  # Slightly lighter than content
+    border-bottom: 2px solid #22b8be;
+    spacing: 6px;
+    padding: 4px 8px;
+    /* Optional: subtle shadow for more separation */
+    /* box-shadow: 0 2px 6px rgba(34,184,190,0.08); */
+}
+QToolButton {
+    background: transparent;
+    color: #e0e0e0;
+    font-size: 16px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+QToolButton:hover {
+    background: #22b8be;
+    color: #181c1f;
+}
+QToolButton:pressed {
+    background: #176d72;
+    color: #fff;
+}
+"""
+
+# --- LIGHT MODE TOOLBAR STYLE ---
+TOOLBAR_STYLE_LIGHT = """
+QToolBar {
+    background: #f8f9fa;
+    border-bottom: 1px solid #22b8be;
+    spacing: 6px;
+    padding: 4px 8px;
+}
+QToolButton {
+    background: transparent;
+    color: #222;
+    font-size: 16px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+QToolButton:hover {
+    background: #22b8be;
+    color: #fff;
+}
+QToolButton:pressed {
+    background: #176d72;
+    color: #fff;
+}
+"""
+
+# --- DARK MODE WINDOW STYLE ---
+WINDOW_STYLE_DARK = """
+QMainWindow, QWidget {
+    background: #181c1f;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+"""
+
+# --- LIGHT MODE WINDOW STYLE ---
+WINDOW_STYLE_LIGHT = """
+QMainWindow, QWidget {
+    background: #fff;
+    color: #222;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+"""

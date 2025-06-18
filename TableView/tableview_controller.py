@@ -20,11 +20,6 @@ class TableViewController:
         self.view.delete_btn.clicked.connect(self.delete_entry)  # type: ignore
         self.view.view_btn.clicked.connect(self.view_entry)  # type: ignore
         self.view.close_btn.clicked.connect(self.close)  # type: ignore
-        self.view.filter_btn.clicked.connect(self.view.model.filter_data)  # type: ignore
-        self.view.sort_btn.clicked.connect(self.view.model.sort_data)  # type: ignore
-        self.view.model.data_changed.connect(self.view.table_view.update)  # type: ignore
-        self.view.model.set_table_name(self.table_name)  # type: ignore
-        self.model.dataChanged.connect(self.on_checkbox_changed)  # type: ignore
 
     def add_entry(self):
         # Logic to add a new entry (show input fields, collect data, insert into DB, refresh table)

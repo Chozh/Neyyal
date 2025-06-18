@@ -17,7 +17,7 @@ class InvoiceModel:
         row = execute_stmt_return_one(
             f"""SELECT invoice_id, invoice_date, bill_to_name, amount_in_words, 
                    state, state_code, total_amount, cgst, sgst, igst, status
-                FROM {T.INVOICE_TABLE} WHERE invoice_id = ?""",
+                FROM {T.INVOICE_TABLE.value} WHERE invoice_id = ?""",
             (invoice_id,)
         )
 
@@ -43,7 +43,7 @@ class InvoiceModel:
         Insert a new invoice record and return the new invoice_id.
         """
         stmt = f"""
-            INSERT INTO {T.INVOICE_TABLE} (
+            INSERT INTO {T.INVOICE_TABLE.value} (
                 invoice_date, reverse_charge, state, state_code,
                 transport_mode, vehicle_number, date_of_supply, place_of_supply,
                 bill_to_name, bill_to_address, bill_to_gstin, bill_to_state, bill_to_state_code,
@@ -94,7 +94,7 @@ class InvoiceModel:
         Update an existing invoice record.
         """
         stmt = f"""
-            UPDATE {T.INVOICE_TABLE} SET
+            UPDATE {T.INVOICE_TABLE.value} SET
                 invoice_date = ?, reverse_charge = ?, state = ?, state_code = ?,
                 transport_mode = ?, vehicle_number = ?, date_of_supply = ?, place_of_supply = ?,
                 bill_to_name = ?, bill_to_address = ?, bill_to_gstin = ?, bill_to_state = ?,

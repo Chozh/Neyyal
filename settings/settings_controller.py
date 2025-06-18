@@ -7,7 +7,9 @@ from utils.style_global import (
     LABEL_STYLE_DARK, LABEL_STYLE_LIGHT,
     EDIT_STYLE_DARK, EDIT_STYLE_LIGHT,
     TABLE_STYLE_DARK, TABLE_STYLE_LIGHT,
-    MENU_STYLE_DARK, MENU_STYLE_LIGHT
+    MENU_STYLE_DARK, MENU_STYLE_LIGHT,
+    TOOLBAR_STYLE_DARK, TOOLBAR_STYLE_LIGHT,
+    WINDOW_STYLE_DARK, WINDOW_STYLE_LIGHT
 )
 from PyQt6.QtWidgets import QApplication  # or from PySide2.QtWidgets import QApplication
 
@@ -36,7 +38,9 @@ class SettingsController:
                 LABEL_STYLE_DARK +
                 EDIT_STYLE_DARK +
                 TABLE_STYLE_DARK +
-                MENU_STYLE_DARK
+                MENU_STYLE_DARK +
+                TOOLBAR_STYLE_DARK +
+                WINDOW_STYLE_DARK
             )
         else:
             app.setStyleSheet(
@@ -44,5 +48,7 @@ class SettingsController:
                 LABEL_STYLE_LIGHT +
                 EDIT_STYLE_LIGHT +
                 TABLE_STYLE_LIGHT +
-                MENU_STYLE_LIGHT
+                MENU_STYLE_LIGHT +
+                TOOLBAR_STYLE_LIGHT +
+                WINDOW_STYLE_LIGHT
             )

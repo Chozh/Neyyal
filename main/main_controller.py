@@ -9,10 +9,11 @@ from settings.settings_controller import SettingsController
 class MainController:
     def __init__(self, app: QApplication):
         self.app = app
-        self.app.setApplicationName("Angadi Billing System")
         self.window = MainWindow()
         self.setup_menu_connections()
         self.settings_controller = SettingsController(self.app)
+        self.settings_controller.apply_global_styles(app) # Apply global styles
+        # self.settings_controller.load_settings()  # Load settings on startup
 
     def setup_menu_connections(self) -> None:
         # Menu actions
