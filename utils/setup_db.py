@@ -16,14 +16,16 @@ class Setup_DB:
                     username TEXT NOT NULL UNIQUE,
                     phone TEXT NOT NULL,
                     address TEXT NOT NULL,
-                    password TEXT NOT NULL
+                    password TEXT NOT NULL,
+                    user_type TEXT NOT NULL DEFAULT 'EMP',
+                    added_by INTEGER NOT NULL
                 )
         ''')
 
         execute_stmt(f'''
                 CREATE TABLE IF NOT EXISTS {T.LOGIN_HISTORY_TABLE.value} (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT NOT NULL,
+                    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    FOREIGN KEY (user_id) REFERENCES {T.USERS_TABLE.value}(id)
                     login_time TEXT,
                     logout_time TEXT
                 )
@@ -36,7 +38,7 @@ class Setup_DB:
                     category_id INTEGER NOT NULL,
                     item_description TEXT,
                     price REAL NOT NULL,
-                    FOREIGN KEY (category_id) REFERENCES category(category_id)
+                    FOREIGN KEY (category_id) REFERENCES {T.CATEGORY_TABLE.value}(category_id)
                 )
         ''')
 

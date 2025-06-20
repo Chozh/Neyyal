@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QMessageBox, QWidget
 from typing import Optional
 from .login_model import UserModel
 from .login_view import LoginDialog
+from utils.session import set_current_user
 
 class LoginController:
     def __init__(self, parent: Optional[QWidget] = None):
@@ -23,9 +24,13 @@ class LoginController:
             QMessageBox.warning(self.view, "Input Error", "Username and password cannot be empty.")
             return
         # Validate user credentials
-        if self.model.validate_user(username, password):
+        user_id: int = self.model.validate_user(username, password)
+            # Get user id and name for session
+        if user_id > 0:
+            set_current_user(user_id, username)
             self.view.accept()
             if self.parent is not None:
                 self.parent.show()  # Show main window on successful login
         else:
             QMessageBox.warning(self.view, "Login Failed", "Invalid username or password.")
+

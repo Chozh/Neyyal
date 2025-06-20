@@ -271,12 +271,10 @@ QMenu::separator {
 # --- DARK MODE TOOLBAR STYLE ---
 TOOLBAR_STYLE_DARK = """
 QToolBar {
-    background: #232f36;  # Slightly lighter than content
+    background: #26323a;
     border-bottom: 2px solid #22b8be;
     spacing: 6px;
     padding: 4px 8px;
-    /* Optional: subtle shadow for more separation */
-    /* box-shadow: 0 2px 6px rgba(34,184,190,0.08); */
 }
 QToolButton {
     background: transparent;

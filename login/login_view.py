@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from typing import Optional
+import hashlib
 
 class LoginDialog(QDialog):
     def __init__(self, parent: Optional[QWidget] = None):
@@ -65,4 +66,5 @@ class LoginDialog(QDialog):
         username = self.username_input.text()
         password = self.password_input.text()
         user_type = "employee" if self.employee_radio.isChecked() else "admin"
-        return username, password, user_type
+        return username, hashlib.sha256(password.encode()).hexdigest(), user_type
+    
