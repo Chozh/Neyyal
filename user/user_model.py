@@ -1,7 +1,7 @@
 # user_model.py
 from utils.DB_conn import execute_stmt, execute_stmt_return
 from utils.Tables import TableName as T
-from utils.session import get_current_user_id
+from user.session import get_current_user_id
 
 class UserModel:
     def register_admin(self, name: str, username: str, phone: str, address: str, password: str) -> bool:

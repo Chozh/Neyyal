@@ -1,0 +1,34 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Run Neyyal Billing System",
+      "program": "${workspaceFolder}/main.py"
+    },
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Run Neyyal Billing System Install Script",
+      "program": "${workspaceFolder}/install_app.py"
+    },
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Run Neyyal Billing System with Entry Point Selection",
+      "program": "${workspaceFolder}/${input:entryPoint}"
+    },
+  ],
+  "inputs": [
+    {
+      "id": "entryPoint",
+      "type": "pickString",
+      "description": "Select the Python entry point to launch",
+      "options": [
+        "main.py",
+        "install_app.py"
+      ]
+    }
+  ]
+}

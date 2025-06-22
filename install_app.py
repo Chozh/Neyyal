@@ -41,6 +41,6 @@ def drop_table(table_name: str) -> None:
         print(f"Error dropping table '{table_name}': {e}")
 
 if __name__ == "__main__":
-    drop_table(T.USERS_TABLE.value)  # Drop users table if it exists
+    Setup_DB.drop_all_tables()
     install()
     add_super_user()

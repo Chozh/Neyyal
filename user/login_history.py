@@ -4,32 +4,37 @@ from datetime import datetime
 from typing import Optional
 from utils.Tables import TableName as T
 from utils.setup_db import create_login_history_table
-from utils.DB_conn import execute_stmt, execute_stmt_return
-from utils.session import clear_current_user
+from utils.DB_conn import execute_stmt, execute_stmt_return_one, execute_stmt_return
+from user.session import clear_current_session, set_current_session
 
 class LoginHistory:
     def __init__(self):
         """Initialize the LoginHistory class and create the login history table if it doesn't exist."""
         create_login_history_table()
 
-    def record_login(self, user_id: int) -> None:
+    def record_login(self, username: str) -> int:
         """Record a user login event with the current timestamp and return the log ID."""
         login_time = datetime.now().isoformat(sep=' ', timespec='seconds')
         execute_stmt(f'''
             INSERT INTO {T.LOGIN_HISTORY_TABLE.value} (user_id, login_time, logout_time)
             VALUES (?, ?, NULL)
-            ''', (user_id, login_time))
-        log_id = execute_stmt_return(f'''
+            ''', (username, login_time))
+        result = execute_stmt_return_one(f'''
             SELECT id FROM {T.LOGIN_HISTORY_TABLE.value}
             WHERE user_id = ? AND login_time = ?
             ORDER BY id DESC LIMIT 1
-            ''', (user_id, login_time))[0][0]
-        # Return the log ID for further processing
-        return log_id
+            ''', (username, login_time))
+        if result and result[0]:
+            log_id: int = result[0][0]
+            set_current_session(username, log_id)
+            return log_id
+        else:
+            raise ValueError("Failed to retrieve log_id for the login event.")
 
 
-    def record_logout(self, log_id: int) -> None:
-        clear_current_user()  # Clear the current user session
+    @staticmethod
+    def record_logout(log_id: int) -> None:
+        clear_current_session()  # Clear the current session ID
         """Record a user logout event with the current timestamp."""
         logout_time = datetime.now().isoformat(sep=' ', timespec='seconds')
         execute_stmt(f'''
@@ -40,12 +45,12 @@ class LoginHistory:
             ''', (logout_time, log_id))
         
 
-    def get_user_history(self, user_id: int) -> list[tuple[str, Optional[str]]]:
+    def get_user_history(self, username: int) -> list[tuple[str, Optional[str]]]:
         """Retrieve the login/logout history for a given user."""
         history: list[tuple[str, Optional[str]]] = execute_stmt_return(f'''
                 SELECT login_time, logout_time FROM {T.LOGIN_HISTORY_TABLE.value}
                 WHERE username = ? ORDER BY id DESC
-            ''', (user_id,))
+            ''', (username,))
         return history
     
     def get_all_history(self) -> list[tuple[str, str | None]]:

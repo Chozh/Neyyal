@@ -71,10 +71,6 @@ class InvoiceModel:
             data["ship_to_state"],
             data["ship_to_state_code"],
             data["amount_in_words"],
-            data["bank_name"],
-            data["account_no"],
-            data["ifsc_code"],
-            data["terms"]
         )
         # Use execute_stmt to insert, then fetch last rowid
         success = execute_stmt(stmt, params)

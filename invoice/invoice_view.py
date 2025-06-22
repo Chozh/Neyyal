@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import QDate, Qt
 from typing import TypedDict
-from configuration import COMPANY_NAME, COMPANY_ADDRESS
+from configuration import COMPANY_NAME, COMPANY_ADDRESS, BANK_NAME, ACCOUNT_NO, IFSC_CODE
 from .invoice_report_view import InvoiceReportDialog
 from .invoice_model import InvoiceModel
 from .customer_model import CustomerModel
@@ -112,12 +112,9 @@ class InvoiceDialog(QDialog):
         # Bank details
         bank_layout = QVBoxLayout()
         bank_layout.addWidget(QLabel("<b>Bank Details:</b>"))
-        self.bank_name_edit = QLineEdit()
-        self.account_no_edit = QLineEdit()
-        self.ifsc_code_edit = QLineEdit()
-        bank_layout.addWidget(self._create_label_input("Bank Name:", self.bank_name_edit))
-        bank_layout.addWidget(self._create_label_input("Account No:", self.account_no_edit))
-        bank_layout.addWidget(self._create_label_input("IFSC Code:", self.ifsc_code_edit))
+        bank_layout.addWidget(QLabel("Bank Name: " + BANK_NAME))
+        bank_layout.addWidget(QLabel("Account No: " + ACCOUNT_NO))
+        bank_layout.addWidget(QLabel("IFSC Code: " + IFSC_CODE))
         main_layout.addLayout(bank_layout)
 
         # Terms and conditions
@@ -168,10 +165,6 @@ class InvoiceDialog(QDialog):
             "ship_to_state": self.ship_to_party['state'].text(),
             "ship_to_state_code": self.ship_to_party['state_code'].text(),
             "amount_in_words": self.amount_in_words_edit.text(),
-            "bank_name": self.bank_name_edit.text(),
-            "account_no": self.account_no_edit.text(),
-            "ifsc_code": self.ifsc_code_edit.text(),
-            "terms": self.terms_text.toPlainText()
         }
         invoice_id = InvoiceModel.save_invoice(invoice_data)
         if invoice_id:
@@ -232,10 +225,6 @@ class InvoiceDialog(QDialog):
             "ship_to_state": self.ship_to_party['state'].text(),
             "ship_to_state_code": self.ship_to_party['state_code'].text(),
             "amount_in_words": self.amount_in_words_edit.text(),
-            "bank_name": self.bank_name_edit.text(),
-            "account_no": self.account_no_edit.text(),
-            "ifsc_code": self.ifsc_code_edit.text(),
-            "terms": self.terms_text.toPlainText()
         }
 
     def _show_customer_suggestions(self, text: str):
@@ -245,6 +234,7 @@ class InvoiceDialog(QDialog):
 
         # Fetch matching customers using CustomerModel
         customers = CustomerModel.search_customers_by_name(text, limit=4)
+ 
 
         if not customers:
             self.customer_suggestions.hide()

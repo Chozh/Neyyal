@@ -60,8 +60,8 @@ class InvoiceReportDialog(QDialog):
 
         # Action buttons
         button_layout = QHBoxLayout()
-        self.print_button = QPushButton("View Invoice")
-        self.export_button = QPushButton("Export")
+        self.print_button = QPushButton("Print")
+        self.export_button = QPushButton("Export As PDF")
         self.close_button = QPushButton("Close")
         button_layout.addWidget(self.print_button)
         button_layout.addWidget(self.export_button)
@@ -69,4 +69,65 @@ class InvoiceReportDialog(QDialog):
         button_layout.addWidget(self.close_button)
         main_layout.addLayout(button_layout)
 
-        self.close_button.clicked.connect(self.close)  # type: ignore
+    def render_as_html(self) -> str:
+        """
+        Render the invoice report as an HTML string, including styles and a table for items.
+        """
+        invoice_info: Dict[str, Any] = getattr(self, "invoice_info", {})
+        # Header info
+        company_html = f"""
+        <div style="font-family:Segoe UI,Arial,sans-serif;">
+            <h2 style="margin-bottom:0;">{COMPANY_NAME}</h2>
+            <div style="margin-bottom:16px;">{COMPANY_ADDRESS}</div>
+        """
+
+        # Invoice info
+        company_html += f"""
+            <div>
+                <b>Invoice No:</b> {invoice_info.get('invoice_no', '')} &nbsp;&nbsp;
+                <b>Date:</b> {invoice_info.get('invoice_date', '')} &nbsp;&nbsp;
+                <b>Customer:</b> {invoice_info.get('customer_name', '')}
+            </div>
+        """
+
+        # Amounts
+        company_html += f"""
+            <div style="margin-top:8px;">
+                <b>Total Amount:</b> {invoice_info.get('total_amount', '')} &nbsp;&nbsp;
+                <b>CGST:</b> {invoice_info.get('cgst', '')} &nbsp;&nbsp;
+                <b>SGST:</b> {invoice_info.get('sgst', '')} &nbsp;&nbsp;
+                <b>IGST:</b> {invoice_info.get('igst', '')} &nbsp;&nbsp;
+                <b>Status:</b> {invoice_info.get('status', '')}
+            </div>
+        """
+
+        # Table for items (if available)
+        items = invoice_info.get('items', [])
+        table_html = """
+            <table border="1" cellspacing="0" cellpadding="4" style="margin-top:16px;width:100%;border-collapse:collapse;">
+                <tr style="background:#f0f0f0;">
+                    <th>Product</th>
+                    <th>HSN No</th>
+                    <th>QTY</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                </tr>
+        """
+        for item in items:
+            table_html += f"""
+                <tr>
+                    <td>{item.get('description', '')}</td>
+                    <td>{item.get('hsn', '')}</td>
+                    <td>{item.get('quantity', '')}</td>
+                    <td>{item.get('rate', '')}</td>
+                    <td>{item.get('amount', '')}</td>
+                </tr>
+            """
+        table_html += "</table>"
+
+        # Footer (optional)
+        company_html += table_html
+        company_html += "</div>"
+
+        return company_html
+

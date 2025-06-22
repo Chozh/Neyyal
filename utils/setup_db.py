@@ -25,9 +25,10 @@ class Setup_DB:
         execute_stmt(f'''
                 CREATE TABLE IF NOT EXISTS {T.LOGIN_HISTORY_TABLE.value} (
                     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    FOREIGN KEY (user_id) REFERENCES {T.USERS_TABLE.value}(id)
+                    username TEXT NOT NULL,
                     login_time TEXT,
-                    logout_time TEXT
+                    logout_time TEXT,
+                    FOREIGN KEY (username) REFERENCES {T.USERS_TABLE.value}(username)
                 )
         ''')
 
@@ -91,7 +92,22 @@ class Setup_DB:
                     FOREIGN KEY (item_id) REFERENCES {T.ITEM_TABLE.value}(item_id)
                 )
         ''')
+        execute_stmt(f'''
+                CREATE TABLE IF NOT EXISTS {T.ORDER_TABLE.value} (
+                    order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    customer_id INTEGER NOT NULL,
+                    order_date TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'PENDING',
+                    FOREIGN KEY (customer_id) REFERENCES {T.CUSTOMER_TABLE.value}(customer_id)
+                )
+        ''')
 
+    def drop_all_tables() -> None:
+        """Drop all tables in the database."""
+        for table in T:
+            execute_stmt(f"DROP TABLE IF EXISTS {table.value}")
+        print("All tables dropped successfully.")
+    
 
 def create_login_history_table() -> None:
     execute_stmt(f'''

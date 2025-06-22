@@ -5,11 +5,12 @@ class TableName(Enum):
     LOGIN_HISTORY_TABLE = "login_history"
     ITEM_TABLE = "item"
     CATEGORY_TABLE = "category"
-    ORDER_TABLE = "order"
+    ORDER_TABLE = "orders"
     INVOICE_TABLE = "invoice"
     CUSTOMER_TABLE = "customer"
     SHIFT_TABLE = "shift"
     LOOM_TABLE = "loom"
+
  
 
 def get_tables() -> list[str]:

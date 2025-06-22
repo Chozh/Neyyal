@@ -19,11 +19,12 @@ def execute_stmt(stmt: str, params: tuple[Any, ...] = ()) -> bool:
             cursor.execute(stmt, params)
             conn.commit()
     except sqlite3.Error as e:
+        # Log the error with a timestamp
         logging.error(f"Database error: {e}")
         return False
     return True
 
-def execute_stmt_return(stmt: str, params: tuple[Any, ...] = ()) -> list[tuple[str, str | None]]:
+def execute_stmt_return(stmt: str, params: tuple[Any, ...] = ()) -> list[tuple[str, Any | None]]:
     """
     Executes a parameterized SQL statement and returns the result.
     """
@@ -48,7 +49,7 @@ def close_connection(conn: sqlite3.Connection) -> None:
         logging.warning("Attempted to close a None connection.")
 
 
-def execute_stmt_return_one(stmt: str, params: tuple[Any, ...] = ()) -> tuple[str, Any | None]:
+def execute_stmt_return_one(stmt: str, params: tuple[Any, ...] = ()) -> tuple[Any, ...] | None:
     """
     Executes a parameterized SQL statement and returns the result.
     """
@@ -60,4 +61,4 @@ def execute_stmt_return_one(stmt: str, params: tuple[Any, ...] = ()) -> tuple[st
             return result
     except sqlite3.Error as e:
         logging.error(f"Database error: {e}")
-        return ("", None)
+        return (None,)
