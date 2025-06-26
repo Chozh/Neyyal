@@ -10,8 +10,15 @@ class InvoiceController:
         self.setup_connections()
 
     def setup_connections(self):
-        # Connect signals and slots here (e.g., button clicks)
-        pass
+        """Setup connections for the invoice dialog."""
+        # Connect Generate Invoice button to generate invoice
+        self.view.generate_button.clicked.connect(self.generate_invoice)  # type: ignore
+        # Connect Cancel Invoice button to close the dialog
+        self.view.cancel_button.clicked.connect(self.view.reject)  # type: ignore
+
+    def show_invoice_dialog(self):
+        """Show the invoice dialog for creating a new invoice."""
+        self.view.exec()
 
     def generate_invoice(self):
         invoice_data = self.view.collect_invoice_data()

@@ -22,9 +22,30 @@ class MainController:
     def setup_menu_connections(self) -> None:
         # Menu actions
         self.window.exit_action.triggered.connect(self.app.quit)  # type: ignore
+
+        # User management actions
         self.window.users_action.triggered.connect(lambda: self.show_table(T.USERS_TABLE.value))  # type: ignore
+        self.window.employees_action.triggered.connect(lambda: self.show_table(T.EMPLOYEE_TABLE.value))  # type: ignore
+        self.window.customers_action.triggered.connect(lambda: self.show_table(T.CUSTOMER_TABLE.value))  # type: ignore
+        self.window.suppliers_action.triggered.connect(lambda: self.show_table(T.SUPPLIER_TABLE.value))  # type: ignore
+
+        # Inventory actions
+        self.window.shifts_action.triggered.connect(lambda: self.show_table(T.SHIFT_TABLE.value))  # type: ignore
+        self.window.looms_action.triggered.connect(lambda: self.show_table(T.LOOM_TABLE.value))  # type: ignore
+        self.window.items_action.triggered.connect(lambda: self.show_table(T.ITEM_TABLE.value))  # type: ignore
+        self.window.categories_action.triggered.connect(lambda: self.show_table(T.CATEGORY_TABLE.value))  # type: ignore
+        self.window.stock_action.triggered.connect(lambda: self.show_table(T.STOCK_TABLE.value))  # type: ignore
+
+        self.window.payments_action.triggered.connect(lambda: self.show_table(T.PAYMENT_TABLE.value))  # type: ignore
+        self.window.orders_action.triggered.connect(lambda: self.show_table(T.ORDER_TABLE.value))  # type: ignore
+
+        # History actions
         self.window.login_history_action.triggered.connect(lambda: self.show_table(T.LOGIN_HISTORY_TABLE.value))  # type: ignore
+        self.window.invoice_history_action.triggered.connect(lambda: self.show_table(T.INVOICE_TABLE.value))  # type: ignore
+
+        # Action connections
         self.window.generate_invoice_action.triggered.connect(self.show_invoice_dialog)  # type: ignore
+        self.window.add_work_entry_action.triggered.connect(lambda: self.show_table(T.PRODUCTION_TABLE.value))  # type: ignore
 
         # Toolbar actions
         self.window.settings_action.triggered.connect(self.show_settings_dialog)  # type: ignore
@@ -61,7 +82,7 @@ class MainController:
         if not get_current_session_id() != 0:
             return
         invoice_controller = InvoiceController(self.window)
-        invoice_controller.generate_invoice()
+        invoice_controller.show_invoice_dialog()
 
     def show_settings_dialog(self):
         if not get_current_session_id() != 0:
@@ -72,7 +93,7 @@ class MainController:
         """Run the main application loop, ensuring logout time is updated on exit."""
         #self.show_login()
         from user.session import set_current_session
-        set_current_session("admin", 0)  # For testing purposes, set a dummy session
+        set_current_session("admin", 1)  # For testing purposes, set a dummy session
         self.window.show()
         try:
             self.app.exec()

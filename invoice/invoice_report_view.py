@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel,
     QTableWidget, QPushButton, QWidget, QSizePolicy
 )
-from configuration import COMPANY_NAME, COMPANY_ADDRESS
+from configuration import COMPANY_NAME, COMPANY_ADDRESS, BANK_NAME, ACCOUNT_NO, IFSC_CODE
 from typing import Any, Dict, Optional
 
 class InvoiceReportDialog(QDialog):
@@ -57,6 +57,27 @@ class InvoiceReportDialog(QDialog):
         self.report_table.setRowCount(0)
         self.report_table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         main_layout.addWidget(self.report_table)
+
+        # Bank details
+        bank_layout = QVBoxLayout()
+        bank_layout.addWidget(QLabel("<b>Bank Details:</b>"))
+        bank_layout.addWidget(QLabel("Bank Name: " + BANK_NAME))
+        bank_layout.addWidget(QLabel("Account No: " + ACCOUNT_NO))
+        bank_layout.addWidget(QLabel("IFSC Code: " + IFSC_CODE))
+        main_layout.addLayout(bank_layout)
+
+        # Terms and conditions
+        terms_layout = QVBoxLayout()
+        terms_layout.addWidget(QLabel("<b>Terms and conditions:</b>"))
+        self.terms_label = QLabel("Payment is due within 30 days.")
+        terms_layout.addWidget(self.terms_label)
+        main_layout.addLayout(terms_layout)
+
+        # Authorised Signatory
+        signatory_layout = QHBoxLayout()
+        signatory_layout.addStretch()
+        signatory_layout.addWidget(QLabel("Authorised Signatory"))
+        main_layout.addLayout(signatory_layout)
 
         # Action buttons
         button_layout = QHBoxLayout()

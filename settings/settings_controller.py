@@ -9,7 +9,12 @@ from utils.style_global import (
     TABLE_STYLE_DARK, TABLE_STYLE_LIGHT,
     MENU_STYLE_DARK, MENU_STYLE_LIGHT,
     TOOLBAR_STYLE_DARK, TOOLBAR_STYLE_LIGHT,
-    WINDOW_STYLE_DARK, WINDOW_STYLE_LIGHT
+    WINDOW_STYLE_DARK, WINDOW_STYLE_LIGHT,
+    DATE_EDIT_STYLE_DARK, DATE_EDIT_STYLE_LIGHT,
+    COMBO_BOX_STYLE_DARK, COMBO_BOX_STYLE_LIGHT,
+    CHECKBOX_STYLE_DARK, CHECKBOX_STYLE_LIGHT,
+    RADIO_BUTTON_STYLE_DARK, RADIO_BUTTON_STYLE_LIGHT,
+    PROGRESS_BAR_STYLE_DARK, PROGRESS_BAR_STYLE_LIGHT
 )
 from PyQt6.QtWidgets import QApplication  # or from PySide2.QtWidgets import QApplication
 
@@ -40,7 +45,12 @@ class SettingsController:
                 TABLE_STYLE_DARK +
                 MENU_STYLE_DARK +
                 TOOLBAR_STYLE_DARK +
-                WINDOW_STYLE_DARK
+                WINDOW_STYLE_DARK +
+                DATE_EDIT_STYLE_DARK +
+                COMBO_BOX_STYLE_DARK +
+                CHECKBOX_STYLE_DARK +
+                RADIO_BUTTON_STYLE_DARK +
+                PROGRESS_BAR_STYLE_DARK
             )
         else:
             app.setStyleSheet(
@@ -50,5 +60,10 @@ class SettingsController:
                 TABLE_STYLE_LIGHT +
                 MENU_STYLE_LIGHT +
                 TOOLBAR_STYLE_LIGHT +
-                WINDOW_STYLE_LIGHT
+                WINDOW_STYLE_LIGHT +
+                DATE_EDIT_STYLE_LIGHT +
+                COMBO_BOX_STYLE_LIGHT +
+                CHECKBOX_STYLE_LIGHT +
+                RADIO_BUTTON_STYLE_LIGHT +
+                PROGRESS_BAR_STYLE_LIGHT
             )

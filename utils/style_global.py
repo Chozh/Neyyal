@@ -339,3 +339,178 @@ QMainWindow, QWidget {
     font-family: 'Segoe UI', Arial, sans-serif;
 }
 """
+
+# --- DARK MODE DATE EDIT STYLE ---
+DATE_EDIT_STYLE_DARK = """
+QDateEdit {
+    background: #26323a;
+    color: #e0e0e0;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QDateEdit::drop-down {
+    background: #22b8be;
+    color: #181c1f;
+    border: none;
+    border-radius: 4px;
+}
+QDateEdit::drop-down:hover {
+    background: #176d72;
+}
+"""
+# --- LIGHT MODE DATE EDIT STYLE ---
+DATE_EDIT_STYLE_LIGHT = """
+QDateEdit {
+    background: #f8f9fa;
+    color: #222;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QDateEdit::drop-down {
+    background: #22b8be;
+    color: #181c1f;
+    border: none;
+    border-radius: 4px;
+}
+QDateEdit::drop-down:hover {
+    background: #176d72;
+}
+"""
+# --- DARK MODE COMBO BOX STYLE ---
+COMBO_BOX_STYLE_DARK = """
+QComboBox {
+    background: #26323a;
+    color: #e0e0e0;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QComboBox::drop-down {
+    background: #22b8be;
+    color: #181c1f;
+    border: none;
+    border-radius: 4px;
+}
+QComboBox::drop-down:hover {
+    background: #176d72;
+}
+"""
+# --- LIGHT MODE COMBO BOX STYLE ---
+COMBO_BOX_STYLE_LIGHT = """
+QComboBox {
+    background: #f8f9fa;
+    color: #222;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QComboBox::drop-down {
+    background: #22b8be;
+    color: #181c1f;
+    border: none;
+    border-radius: 4px;
+}
+QComboBox::drop-down:hover {
+    background: #176d72;
+}
+"""
+# --- DARK MODE CHECKBOX STYLE ---
+CHECKBOX_STYLE_DARK = """
+QCheckBox {
+    background: #26323a;
+    color: #e0e0e0;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QCheckBox::indicator {
+    background: #22b8be;
+    border: none;
+    border-radius: 4px;
+}
+QCheckBox::indicator:checked {
+    background: #176d72;
+}
+"""
+# --- LIGHT MODE CHECKBOX STYLE ---
+CHECKBOX_STYLE_LIGHT = """
+QCheckBox {
+    background: #f8f9fa;
+    color: #222;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QCheckBox::indicator {
+    background: #22b8be;
+    border: none;
+    border-radius: 4px;
+}
+QCheckBox::indicator:checked {
+    background: #176d72;
+}
+"""
+# --- DARK MODE RADIO BUTTON STYLE ---
+RADIO_BUTTON_STYLE_DARK = """
+QRadioButton {
+    background: #26323a;
+    color: #e0e0e0;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QRadioButton::indicator {
+    background: #22b8be;
+    border: none;
+    border-radius: 4px;
+}
+QRadioButton::indicator:checked {
+    background: #176d72;
+}
+"""
+# --- LIGHT MODE RADIO BUTTON STYLE ---
+RADIO_BUTTON_STYLE_LIGHT = """
+QRadioButton {
+    background: #f8f9fa;
+    color: #222;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+QRadioButton::indicator {
+    background: #22b8be;
+    border: none;
+    border-radius: 4px;
+}
+QRadioButton::indicator:checked {
+    background: #176d72;
+}
+"""
+# --- DARK MODE PROGRESS BAR STYLE ---
+PROGRESS_BAR_STYLE_DARK = """
+QProgressBar {
+    background: #26323a;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px;
+}
+QProgressBar::chunk {
+    background: #22b8be;
+    border-radius: 4px;
+}
+"""
+# --- LIGHT MODE PROGRESS BAR STYLE ---
+PROGRESS_BAR_STYLE_LIGHT = """
+QProgressBar {
+    background: #f8f9fa;
+    border: 1px solid #22b8be;
+    border-radius: 4px;
+    padding: 4px;
+}
+QProgressBar::chunk {
+    background: #22b8be;
+    border-radius: 4px;
+}
+"""

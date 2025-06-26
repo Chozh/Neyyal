@@ -51,9 +51,9 @@ class MainWindow(QMainWindow):
 
         # Action Menu Items
         self.generate_invoice_action = QAction("Generate Invoice", self)
-        if self.actions_menu is not None:
-            self.actions_menu.addAction(self.generate_invoice_action)  # type: ignore[arg-type]
-
+        self.actions_menu.addAction(self.generate_invoice_action)  # type: ignore[arg-type]
+        self.add_work_entry_action = QAction("Add Work Entry", self)
+        self.actions_menu.addAction(self.add_work_entry_action)  # type: ignore[arg-type]
 
         # Right toolbar for settings and logout icons
         toolbar = QToolBar()

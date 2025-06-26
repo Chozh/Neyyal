@@ -1,12 +1,10 @@
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QDateEdit,
-    QTextEdit, QTableWidget, QPushButton, QWidget, QMessageBox, QListWidget, QListWidgetItem
+    QTextEdit, QTableWidget, QPushButton, QWidget, QMessageBox,
+    QListWidget, QListWidgetItem, QSizePolicy, QCheckBox
 )
 from PyQt6.QtCore import QDate, Qt
 from typing import TypedDict
-from configuration import COMPANY_NAME, COMPANY_ADDRESS, BANK_NAME, ACCOUNT_NO, IFSC_CODE
-from .invoice_report_view import InvoiceReportDialog
-from .invoice_model import InvoiceModel
 from .customer_model import CustomerModel
 
 class PartySectionDict(TypedDict):
@@ -23,54 +21,65 @@ class InvoiceDialog(QDialog):
         self.setWindowTitle("Tax Invoice")
         self.setGeometry(100, 100, 1080, 768)
 
+        # Invoice layout
+        invoice_layout = QVBoxLayout(self)
+        self.setLayout(invoice_layout)
+        header_label = QLabel("<h1>Invoice Details</h1>")
+        invoice_layout.addWidget(header_label)
+        invoice_layout.addWidget(QLabel("<hr>"))
+
         # Main layout
         main_layout = QVBoxLayout(self)
-
+        main_layout.setContentsMargins(10, 10, 10, 10)  # Set margins for the main layout
+        main_layout.setSpacing(10)  # Set spacing between widgets
         # Header section
         header_layout = QHBoxLayout()
-        company_layout = QVBoxLayout()
-        company_layout.addWidget(QLabel(f"<b>{COMPANY_NAME}</b>"))
-        company_layout.addWidget(QLabel(COMPANY_ADDRESS))
-        header_layout.addLayout(company_layout)
+        header_left = QVBoxLayout()
+        self.order_number_edit = QLineEdit()
+        header_left.addWidget(self._create_label_input("Order Number:", self.order_number_edit))
+        header_layout.addLayout(header_left, stretch=1)  # Set stretch factor to 1
 
-        # Invoice details
-        invoice_layout = QVBoxLayout()
+        header_right = QVBoxLayout()
         self.invoice_date_edit = QDateEdit()
         self.invoice_date_edit.setCalendarPopup(True)
         self.invoice_date_edit.setDate(QDate.currentDate())
-        invoice_layout.addWidget(self._create_label_input("Invoice Date:", self.invoice_date_edit))
-        header_layout.addLayout(invoice_layout)
+        self.invoice_date_edit.setDisplayFormat("dd/MM/yyyy")
+        header_right.addWidget(self._create_label_input("Invoice Date:", self.invoice_date_edit))
+        header_layout.addLayout(header_right, stretch=1)  # Set stretch factor to 1
 
         main_layout.addLayout(header_layout)
+
+        main_layout.addWidget(QLabel("<hr>"))
 
         # Other details
         other_details_layout = QHBoxLayout()
         other_details_left = QVBoxLayout()
-        self.reverse_charge_edit = QLineEdit()
-        self.state_edit = QLineEdit()
-        self.state_code_edit = QLineEdit()
-        other_details_left.addWidget(self._create_label_input("Reverse Charge:", self.reverse_charge_edit))
-        other_details_left.addWidget(self._create_label_input("State:", self.state_edit))
-        other_details_left.addWidget(self._create_label_input("State Code:", self.state_code_edit))
-        other_details_layout.addLayout(other_details_left)
-
-        other_details_right = QVBoxLayout()
         self.transport_mode_edit = QLineEdit()
         self.vehicle_number_edit = QLineEdit()
+        other_details_left.addWidget(self._create_label_input("Transportation Mode:", self.transport_mode_edit))
+        other_details_left.addWidget(self._create_label_input("Vehicle Number:", self.vehicle_number_edit))
+        other_details_layout.addLayout(other_details_left)
+        other_details_right = QVBoxLayout()
         self.date_of_supply_edit = QLineEdit()
         self.place_of_supply_edit = QLineEdit()
-        other_details_right.addWidget(self._create_label_input("Transportation Mode:", self.transport_mode_edit))
-        other_details_right.addWidget(self._create_label_input("Vehicle Number:", self.vehicle_number_edit))
         other_details_right.addWidget(self._create_label_input("Date of Supply:", self.date_of_supply_edit))
         other_details_right.addWidget(self._create_label_input("Place of Supply:", self.place_of_supply_edit))
         other_details_layout.addLayout(other_details_right)
-
         main_layout.addLayout(other_details_layout)
+        main_layout.addWidget(QLabel("<hr>"))
 
         # Bill to Party and Ship to Party
+        phead_layout = QHBoxLayout()
+        phead_layout.addWidget(QLabel("<h2>Bill to Party</h2>"), stretch=2)  # Set stretch factor for Bill to Party
+        phead_layout.addWidget(QLabel("<h2>Ship to Party</h2>"), stretch=1)  # Set stretch factor for Ship to Party
+        fill_ship_to_party_checkbox = QCheckBox("Same as Bill to Party", self)
+        fill_ship_to_party_checkbox.setChecked(True)  # Default checked
+        phead_layout.addWidget(fill_ship_to_party_checkbox)  # Checkbox for filling ship to party
+        phead_layout.addStretch()  # Add stretch to fill space
+        main_layout.addLayout(phead_layout)
         party_layout = QHBoxLayout()
-        self.bill_to_party = self._create_party_section("Bill to Party")
-        self.ship_to_party = self._create_party_section("Ship to Party")
+        self.bill_to_party = self._create_party_section()
+        self.ship_to_party = self._create_party_section()
         party_layout.addLayout(self.bill_to_party['layout'])
         party_layout.addLayout(self.ship_to_party['layout'])
         main_layout.addLayout(party_layout)
@@ -84,11 +93,12 @@ class InvoiceDialog(QDialog):
         self.customer_suggestions.itemClicked.connect(self._select_customer_suggestion)  # type: ignore
         self.bill_to_party['name'].textEdited.connect(self._show_customer_suggestions)  # type: ignore
         self.bill_to_party['name'].editingFinished.connect(self.customer_suggestions.hide)  # type: ignore
+        main_layout.addWidget(QLabel("<hr>"))
 
         # Table for product details
         self.product_table = QTableWidget()
         self.product_table.setColumnCount(6)
-        self.product_table.setHorizontalHeaderLabels(["Count", "NAME OF PRODUCT", "HSN No", "QTY", "RATE", "AMOUNT"])  # type: ignore
+        self.product_table.setHorizontalHeaderLabels(["SNo", "NAME OF PRODUCT", "HSN No", "QTY", "RATE", "AMOUNT"])  # type: ignore
         self.product_table.setRowCount(5)  # Initial rows
         main_layout.addWidget(self.product_table)
 
@@ -103,84 +113,37 @@ class InvoiceDialog(QDialog):
         self.totals_table.setColumnCount(1)
         self.totals_table.setVerticalHeaderLabels([  # type: ignore
             "Less: Discount", "Total Amount Before Tax", "Add: CGST @", "Add: SGST @",
-            "Add: IGST @", "Total Amount After Tax", "GST Payable on reverse Charge"
+            "Add: IGST @", "Total Amount After Tax"
         ])  # type: ignore
         total_layout.addWidget(self.totals_table)
 
         main_layout.addLayout(total_layout)
 
-        # Bank details
-        bank_layout = QVBoxLayout()
-        bank_layout.addWidget(QLabel("<b>Bank Details:</b>"))
-        bank_layout.addWidget(QLabel("Bank Name: " + BANK_NAME))
-        bank_layout.addWidget(QLabel("Account No: " + ACCOUNT_NO))
-        bank_layout.addWidget(QLabel("IFSC Code: " + IFSC_CODE))
-        main_layout.addLayout(bank_layout)
-
-        # Terms and conditions
-        terms_layout = QVBoxLayout()
-        terms_layout.addWidget(QLabel("<b>Terms and conditions:</b>"))
-        self.terms_text = QTextEdit()
-        terms_layout.addWidget(self.terms_text)
-        main_layout.addLayout(terms_layout)
-
-        # Authorised Signatory
-        signatory_layout = QHBoxLayout()
-        signatory_layout.addStretch()
-        signatory_layout.addWidget(QLabel("Authorised Signatory"))
-        main_layout.addLayout(signatory_layout)
-
         # Buttons
         button_layout = QHBoxLayout()
-        self.print_button = QPushButton("Generate")
-        self.save_button = QPushButton("Save")
+        self.generate_button = QPushButton("Generate")
         self.cancel_button = QPushButton("Cancel")
-        button_layout.addWidget(self.print_button)
-        button_layout.addWidget(self.save_button)
+        button_layout.addWidget(self.generate_button)
         button_layout.addWidget(self.cancel_button)
         button_layout.addStretch()
         main_layout.addLayout(button_layout)
 
-        # Connect Print button to save and show InvoiceReportDialog
-        self.print_button.clicked.connect(self.save_and_show_invoice_report)  # type: ignore
+        # Add scroll area for invoice details
+        scrollArea = QWidget()
+        scrollArea.setMinimumSize(800, 600)  # Set minimum size for the scroll area
+        scrollArea.setSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding
+        )  # Allow it to expand in both directions
+        scrollArea.setLayout(main_layout)
+        invoice_layout.addWidget(scrollArea)
 
-    def save_and_show_invoice_report(self):
-        invoice_data = {
-            "invoice_date": self.invoice_date_edit.date().toString("yyyy-MM-dd"),
-            "reverse_charge": self.reverse_charge_edit.text(),
-            "state": self.state_edit.text(),
-            "state_code": self.state_code_edit.text(),
-            "transport_mode": self.transport_mode_edit.text(),
-            "vehicle_number": self.vehicle_number_edit.text(),
-            "date_of_supply": self.date_of_supply_edit.text(),
-            "place_of_supply": self.place_of_supply_edit.text(),
-            "bill_to_name": self.bill_to_party['name'].text(),
-            "bill_to_address": self.bill_to_party['address'].toPlainText(),
-            "bill_to_gstin": self.bill_to_party['gstin'].text(),
-            "bill_to_state": self.bill_to_party['state'].text(),
-            "bill_to_state_code": self.bill_to_party['state_code'].text(),
-            "ship_to_name": self.ship_to_party['name'].text(),
-            "ship_to_address": self.ship_to_party['address'].toPlainText(),
-            "ship_to_gstin": self.ship_to_party['gstin'].text(),
-            "ship_to_state": self.ship_to_party['state'].text(),
-            "ship_to_state_code": self.ship_to_party['state_code'].text(),
-            "amount_in_words": self.amount_in_words_edit.text(),
-        }
-        invoice_id = InvoiceModel.save_invoice(invoice_data)
-        if invoice_id:
-            dialog = InvoiceReportDialog(invoice_info={"invoice_id": invoice_id}, parent=self)
-            dialog.exec()
-        else:
-            QMessageBox.warning(self, "Error", "Could not save invoice.")
-
-    def _create_party_section(self, title: str) -> PartySectionDict:
+    def _create_party_section(self) -> PartySectionDict:
         layout = QVBoxLayout()
         name = QLineEdit()
         address = QTextEdit()
         gstin = QLineEdit()
         state = QLineEdit()
         state_code = QLineEdit()
-        layout.addWidget(QLabel(f"<b>{title}</b>"))
         layout.addWidget(self._create_label_input("Name:", name))
         layout.addWidget(self._create_label_input("Address:", address))
         layout.addWidget(self._create_label_input("GSTIN:", gstin))
@@ -205,26 +168,16 @@ class InvoiceDialog(QDialog):
         return container
 
     def collect_invoice_data(self) -> dict[str, str]:
+        item = self.totals_table.item(5, 0)
+        amount_due = item.text() if item is not None else "0"
         return {
+            "sales_order_id": self.order_number_edit.text(),
+            "customer_id": self.bill_to_party['name'].property("customer_id") or "",
             "invoice_date": self.invoice_date_edit.date().toString("yyyy-MM-dd"),
-            "reverse_charge": self.reverse_charge_edit.text(),
-            "state": self.state_edit.text(),
-            "state_code": self.state_code_edit.text(),
-            "transport_mode": self.transport_mode_edit.text(),
-            "vehicle_number": self.vehicle_number_edit.text(),
-            "date_of_supply": self.date_of_supply_edit.text(),
-            "place_of_supply": self.place_of_supply_edit.text(),
-            "bill_to_name": self.bill_to_party['name'].text(),
-            "bill_to_address": self.bill_to_party['address'].toPlainText(),
-            "bill_to_gstin": self.bill_to_party['gstin'].text(),
-            "bill_to_state": self.bill_to_party['state'].text(),
-            "bill_to_state_code": self.bill_to_party['state_code'].text(),
-            "ship_to_name": self.ship_to_party['name'].text(),
-            "ship_to_address": self.ship_to_party['address'].toPlainText(),
-            "ship_to_gstin": self.ship_to_party['gstin'].text(),
-            "ship_to_state": self.ship_to_party['state'].text(),
-            "ship_to_state_code": self.ship_to_party['state_code'].text(),
-            "amount_in_words": self.amount_in_words_edit.text(),
+            "payment_method": "",  # Add logic if you have a payment method field
+            "amount_due": amount_due,
+            "amount_paid": "0",  # Add logic if you have a paid amount field
+            # ...other fields as needed...
         }
 
     def _show_customer_suggestions(self, text: str):

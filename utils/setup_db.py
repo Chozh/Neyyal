@@ -63,17 +63,63 @@ class Setup_DB:
                 )
         ''')
 
+        # --- SALES ORDERS ---
+        execute_stmt(f'''
+            CREATE TABLE IF NOT EXISTS {T.SALES_ORDER_TABLE.value} (
+                sales_order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                customer_id INTEGER NOT NULL,
+                order_date TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'PENDING',
+                FOREIGN KEY (customer_id) REFERENCES {T.CUSTOMER_TABLE.value}(customer_id)
+            )
+        ''')
+
+        # --- PURCHASE ORDERS ---
+        execute_stmt(f'''
+            CREATE TABLE IF NOT EXISTS {T.PURCHASE_ORDER_TABLE.value} (
+                purchase_order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                supplier_id INTEGER NOT NULL,
+                order_date TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'PENDING',
+                FOREIGN KEY (supplier_id) REFERENCES {T.SUPPLIER_TABLE.value}(supplier_id)
+            )
+        ''')
+
+        # --- SALES PAYMENTS ---
+        execute_stmt(f'''
+            CREATE TABLE IF NOT EXISTS {T.SALES_PAYMENT_TABLE.value} (
+                sales_payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                sales_order_id INTEGER NOT NULL,
+                payment_date TEXT NOT NULL,
+                amount REAL NOT NULL,
+                payment_method TEXT,
+                FOREIGN KEY (sales_order_id) REFERENCES {T.SALES_ORDER_TABLE.value}(sales_order_id)
+            )
+        ''')
+
+        # --- PURCHASE PAYMENTS ---
+        execute_stmt(f'''
+            CREATE TABLE IF NOT EXISTS {T.PURCHASE_PAYMENT_TABLE.value} (
+                purchase_payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                purchase_order_id INTEGER NOT NULL,
+                payment_date TEXT NOT NULL,
+                amount REAL NOT NULL,
+                payment_method TEXT,
+                FOREIGN KEY (purchase_order_id) REFERENCES {T.PURCHASE_ORDER_TABLE.value}(purchase_order_id)
+            )
+        ''')
+
         execute_stmt(f'''
                 CREATE TABLE IF NOT EXISTS {T.INVOICE_TABLE.value} (
                     invoice_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    order_id INTEGER NOT NULL,
+                    sales_order_id INTEGER NOT NULL,
                     customer_id INTEGER,
                     invoice_date TEXT NOT NULL,
                     payment_method TEXT,
                     amount_due REAL NOT NULL,
                     amount_paid REAL,
-                    FOREIGN KEY (order_id) REFERENCES "order"(order_id),
-                    FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
+                    FOREIGN KEY (sales_order_id) REFERENCES {T.SALES_ORDER_TABLE.value}(sales_order_id),
+                    FOREIGN KEY (customer_id) REFERENCES {T.CUSTOMER_TABLE.value}(customer_id)
                 )
         ''')
 
@@ -92,17 +138,54 @@ class Setup_DB:
                     FOREIGN KEY (item_id) REFERENCES {T.ITEM_TABLE.value}(item_id)
                 )
         ''')
+
         execute_stmt(f'''
-                CREATE TABLE IF NOT EXISTS {T.ORDER_TABLE.value} (
-                    order_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    customer_id INTEGER NOT NULL,
-                    order_date TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'PENDING',
-                    FOREIGN KEY (customer_id) REFERENCES {T.CUSTOMER_TABLE.value}(customer_id)
+                CREATE TABLE IF NOT EXISTS {T.STOCK_TABLE.value} (
+                    stock_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    item_id INTEGER NOT NULL,
+                    quantity INTEGER NOT NULL,
+                    FOREIGN KEY (item_id) REFERENCES {T.ITEM_TABLE.value}(item_id)
                 )
         ''')
+        execute_stmt(f'''
+                CREATE TABLE IF NOT EXISTS {T.SUPPLIER_TABLE.value} (
+                    supplier_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    phone TEXT,
+                    email TEXT,
+                    address TEXT
+                )
+        ''')
+        execute_stmt(f'''
+                CREATE TABLE IF NOT EXISTS {T.EMPLOYEE_TABLE.value} (
+                    employee_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    phone TEXT NOT NULL,
+                    email TEXT,
+                    address TEXT,
+                    position TEXT NOT NULL,
+                    salary REAL NOT NULL,
+                    added_by INTEGER NOT NULL
+                )
+        ''')
+        execute_stmt(f'''
+                CREATE TABLE IF NOT EXISTS {T.PRODUCTION_TABLE.value} (
+                    production_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    loom_id TEXT NOT NULL,
+                    item_id INTEGER NOT NULL,
+                    quantity INTEGER NOT NULL,
+                    production_date TEXT NOT NULL,
+                    shift_no INTEGER NOT NULL,
+                    employee_id INTEGER NOT NULL,
+                    FOREIGN KEY (employee_id) REFERENCES {T.EMPLOYEE_TABLE.value}(employee_id),
+                    FOREIGN KEY (shift_no) REFERENCES {T.SHIFT_TABLE.value}(shift_no),
+                    FOREIGN KEY (loom_id) REFERENCES {T.LOOM_TABLE.value}(loom_id),
+                    FOREIGN KEY (item_id) REFERENCES {T.ITEM_TABLE.value}(item_id)
+                )
+        ''')
+        print("All tables created successfully.")
 
-    def drop_all_tables() -> None:
+    def drop_all_tables(self) -> None:
         """Drop all tables in the database."""
         for table in T:
             execute_stmt(f"DROP TABLE IF EXISTS {table.value}")

@@ -5,14 +5,18 @@ class TableName(Enum):
     LOGIN_HISTORY_TABLE = "login_history"
     ITEM_TABLE = "item"
     CATEGORY_TABLE = "category"
-    ORDER_TABLE = "orders"
+    SALES_ORDER_TABLE = "sales_orders"
+    PURCHASE_ORDER_TABLE = "purchase_orders"
+    SALES_PAYMENT_TABLE = "sales_payments"
+    PURCHASE_PAYMENT_TABLE = "purchase_payments"
     INVOICE_TABLE = "invoice"
     CUSTOMER_TABLE = "customer"
     SHIFT_TABLE = "shift"
     LOOM_TABLE = "loom"
-
- 
+    SUPPLIER_TABLE = "supplier"
+    STOCK_TABLE = "stock"
+    EMPLOYEE_TABLE = "employee"
+    PRODUCTION_TABLE = "production"
 
 def get_tables() -> list[str]:
-    """Get a list of all table names."""
     return [table.value for table in TableName]
