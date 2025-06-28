@@ -60,3 +60,12 @@ class TableViewController:
 
     def get_table_name(self) -> str:
         return self.table_name
+    
+    from typing import Any
+
+    def set_data(self, data: list[list[Any]]):
+        """Set new data for the table view."""
+        self.data = data
+        # Ensure headers is a list of str (no None values)
+        safe_headers = [h if h is not None else "" for h in self.headers]
+        self.view.set_data(safe_headers, self.data)

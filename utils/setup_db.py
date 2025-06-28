@@ -24,8 +24,8 @@ class Setup_DB:
 
         execute_stmt(f'''
                 CREATE TABLE IF NOT EXISTS {T.LOGIN_HISTORY_TABLE.value} (
-                    log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT NOT NULL,
+                    session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
                     login_time TEXT,
                     logout_time TEXT,
                     FOREIGN KEY (username) REFERENCES {T.USERS_TABLE.value}(username)

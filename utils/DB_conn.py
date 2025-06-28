@@ -19,8 +19,7 @@ def execute_stmt(stmt: str, params: tuple[Any, ...] = ()) -> bool:
             cursor.execute(stmt, params)
             conn.commit()
     except sqlite3.Error as e:
-        # Log the error with a timestamp
-        logging.error(f"Database error: {e}")
+        logging.error(f"Database error: {e} \nStatement: {stmt} \nParams: {params}")
         return False
     return True
 
@@ -35,7 +34,7 @@ def execute_stmt_return(stmt: str, params: tuple[Any, ...] = ()) -> list[tuple[s
             result = cursor.fetchall()
             return result
     except sqlite3.Error as e:
-        logging.error(f"Database error: {e}")
+        logging.error(f"Database error: {e} \nStatement: {stmt} \nParams: {params}")
         return []
 
 def close_connection(conn: sqlite3.Connection) -> None:
@@ -60,5 +59,5 @@ def execute_stmt_return_one(stmt: str, params: tuple[Any, ...] = ()) -> tuple[An
             result = cursor.fetchone()
             return result
     except sqlite3.Error as e:
-        logging.error(f"Database error: {e}")
+        logging.error(f"Database error: {e} \nStatement: {stmt} \nParams: {params}")
         return (None,)

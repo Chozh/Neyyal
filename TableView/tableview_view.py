@@ -167,3 +167,11 @@ class TableViewEditorDialog(QDialog):
         row_data = self.model.get_checked_row()
         if row_data:
             self.show_input_fields([str(val) for val in row_data])
+
+    def set_data(self, columns: list[str], data: list[list[Any]]):
+        """Set new data for the table view."""
+        self.columns = columns
+        self.model.columns = [""] + columns  # Update checkbox column header
+        self.model.data_rows = [[False] + row for row in data]  # Update checkbox state
+        self.model.layoutChanged.emit()  # Notify the view to refresh
+        

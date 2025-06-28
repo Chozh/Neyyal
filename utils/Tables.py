@@ -17,6 +17,7 @@ class TableName(Enum):
     STOCK_TABLE = "stock"
     EMPLOYEE_TABLE = "employee"
     PRODUCTION_TABLE = "production"
+    PAYMENTS_TABLE = "payments"
 
 def get_tables() -> list[str]:
     return [table.value for table in TableName]
