@@ -2,20 +2,8 @@
 
 from .settings_model import SettingsModel
 from .settings_view import SettingsDialog
-from utils.style_global import (
-    BUTTON_STYLE_DARK, BUTTON_STYLE_LIGHT,
-    LABEL_STYLE_DARK, LABEL_STYLE_LIGHT,
-    EDIT_STYLE_DARK, EDIT_STYLE_LIGHT,
-    TABLE_STYLE_DARK, TABLE_STYLE_LIGHT,
-    MENU_STYLE_DARK, MENU_STYLE_LIGHT,
-    TOOLBAR_STYLE_DARK, TOOLBAR_STYLE_LIGHT,
-    WINDOW_STYLE_DARK, WINDOW_STYLE_LIGHT,
-    DATE_EDIT_STYLE_DARK, DATE_EDIT_STYLE_LIGHT,
-    COMBO_BOX_STYLE_DARK, COMBO_BOX_STYLE_LIGHT,
-    CHECKBOX_STYLE_DARK, CHECKBOX_STYLE_LIGHT,
-    RADIO_BUTTON_STYLE_DARK, RADIO_BUTTON_STYLE_LIGHT,
-    PROGRESS_BAR_STYLE_DARK, PROGRESS_BAR_STYLE_LIGHT
-)
+from utils.style_global_light import STYLE_LIGHT
+from utils.style_global_dark import STYLE_DARK
 from PyQt6.QtWidgets import QApplication  # or from PySide2.QtWidgets import QApplication
 
 class SettingsController:
@@ -38,32 +26,6 @@ class SettingsController:
         :param theme_mode: 'dark' or 'light'
         """
         if SettingsModel.get_theme_mode() == 'dark':
-            app.setStyleSheet(
-                BUTTON_STYLE_DARK +
-                LABEL_STYLE_DARK +
-                EDIT_STYLE_DARK +
-                TABLE_STYLE_DARK +
-                MENU_STYLE_DARK +
-                TOOLBAR_STYLE_DARK +
-                WINDOW_STYLE_DARK +
-                DATE_EDIT_STYLE_DARK +
-                COMBO_BOX_STYLE_DARK +
-                CHECKBOX_STYLE_DARK +
-                RADIO_BUTTON_STYLE_DARK +
-                PROGRESS_BAR_STYLE_DARK
-            )
+            app.setStyleSheet(STYLE_DARK)
         else:
-            app.setStyleSheet(
-                BUTTON_STYLE_LIGHT +
-                LABEL_STYLE_LIGHT +
-                EDIT_STYLE_LIGHT +
-                TABLE_STYLE_LIGHT +
-                MENU_STYLE_LIGHT +
-                TOOLBAR_STYLE_LIGHT +
-                WINDOW_STYLE_LIGHT +
-                DATE_EDIT_STYLE_LIGHT +
-                COMBO_BOX_STYLE_LIGHT +
-                CHECKBOX_STYLE_LIGHT +
-                RADIO_BUTTON_STYLE_LIGHT +
-                PROGRESS_BAR_STYLE_LIGHT
-            )
+            app.setStyleSheet(STYLE_LIGHT)

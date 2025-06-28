@@ -41,6 +41,7 @@ def drop_table(table_name: str) -> None:
         print(f"Error dropping table '{table_name}': {e}")
 
 if __name__ == "__main__":
-    Setup_DB.drop_all_tables()
+    db_setup = Setup_DB()
+    db_setup.drop_all_tables()
     install()
     add_super_user()
