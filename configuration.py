@@ -6,6 +6,7 @@ DB_PATH: str = "neyyal.db"
 ICON_PATH: str = "icons/shop.png"
 
 # Company Information
+APPLICATION_NAME: str = "Neyyal Production Management System"
 COMPANY_NAME: str = "ARUNKUMARAN TEXTILES"
 COMPANY_ADDRESS: str = "44 / 1A, Weavers Colony - 2, TIRUCHENGODE - 637 211. Namakkal Dt. Tamil Nadu."
 BANK_NAME: str = "HDFC"

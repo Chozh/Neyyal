@@ -1,16 +1,23 @@
 from typing import Optional
 from PyQt6.QtWidgets import QWidget
-from .tableview_model import fetch_table_data
-from .tableview_view import TableViewEditorDialog
+from .tableview_model import TableViewModel
+from .tableview_view import TableViewWidget
+from .tableeditor_controller import TableEditorController
+
+from typing import List, Any
 
 class TableViewController:
     def __init__(self, table_name: str, parent: Optional[QWidget] = None):
         self.table_name = table_name
         self.parent = parent
-        self.headers, self.data = fetch_table_data(self.table_name)
-        # Ensure headers is a list of str, replacing None with empty string or a placeholder
-        self.headers = [h if h is not None else "" for h in self.headers]
-        self.view = TableViewEditorDialog(self.table_name, self.headers, self.data, parent=self.parent)
+        self.model = TableViewModel(self.table_name)
+        self.headers: List[str]
+        self.data: List[List[Any]]
+        self.headers, self.data = self.model.get_headers_and_data()  # type: ignore
+
+        # Create the main widget that contains the table and buttons
+        self.view = TableViewWidget(self.table_name, self.headers, self.data, parent=self.parent)
+        self.editor = TableEditorController(self.table_name, parent=self.view)
         self.setup_connections()
 
     def setup_connections(self):
@@ -23,49 +30,33 @@ class TableViewController:
 
     def add_entry(self):
         # Logic to add a new entry (show input fields, collect data, insert into DB, refresh table)
-        self.view.show_input_fields()
-        # Implement DB insert and refresh logic as needed
+        self.editor.show_input_fields("ADD", self.table_name, [])
 
     def update_entry(self):
         # Logic to update the selected entry (get checked row, update in DB, refresh table)
         checked_row = self.view.model.get_checked_row()
         if checked_row:
-            self.view.show_input_fields([str(val) for val in checked_row])
-            # Implement DB update and refresh logic as needed
+            self.editor.show_input_fields("UPDATE", self.table_name, [str(val) for val in checked_row])
 
     def delete_entry(self):
         # Logic to delete the selected entry (get checked row, delete from DB, refresh table)
         checked_row = self.view.model.get_checked_row()
         if checked_row:
-            # Implement DB delete and refresh logic as needed
-            pass
+            if self.model.delete_entry(checked_row):
+                self.model.refresh_data()
 
     def view_entry(self):
         # Logic to view the selected entry (get checked row, show in fields)
         checked_row = self.view.model.get_checked_row()
         if checked_row:
-            self.view.show_input_fields([str(val) for val in checked_row])
-
-    def exec(self):
-        return self.view.exec()
+            self.editor.show_input_fields("VIEW", self.table_name, [str(val) for val in checked_row])
 
     def close(self):
         self.view.close()
-
-    def show(self):
-        self.view.show()
-
-    def get_model(self):
-        return self.view.model
-
-    def get_table_name(self) -> str:
-        return self.table_name
-    
-    from typing import Any
 
     def set_data(self, data: list[list[Any]]):
         """Set new data for the table view."""
         self.data = data
         # Ensure headers is a list of str (no None values)
-        safe_headers = [h if h is not None else "" for h in self.headers]
+        safe_headers = [h if h != "" else "" for h in self.headers]
         self.view.set_data(safe_headers, self.data)

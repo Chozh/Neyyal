@@ -90,14 +90,14 @@ class MainController:
             # Show login history in a table view
             controller = TableViewController(T.LOGIN_HISTORY_TABLE.value)
             controller.set_data(history)
-            controller.exec()
+            self.window.set_content(controller.view)  # Set the table widget as the main content
 
     def show_table(self, table_name: str):
         # Prevent actions if not logged in
         if not get_current_session_id() != 0:
             return
         controller = TableViewController(table_name)
-        controller.exec()
+        self.window.set_content(controller.view)  # Set the table widget as the main content
 
     def show_invoice_dialog(self):
         if not get_current_session_id() != 0:

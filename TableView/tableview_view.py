@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTableView, QPushButton, QLineEdit, QLabel,
+    QVBoxLayout, QHBoxLayout, QTableView, QPushButton,
     QWidget, QSplitter, QScrollArea, QAbstractItemView
 )
 from PyQt6.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant, QObject
@@ -56,13 +56,13 @@ class CheckBoxTableModel(QAbstractTableModel):
             return self.columns[section]
         return super().headerData(section, orientation, role)
 
-    def get_checked_row(self):
+    def get_checked_row(self) -> Optional[list[Any]]:
         for row in self.data_rows:
             if row[0]:
                 return row[1:]  # Exclude checkbox state
         return None
 
-class TableViewEditorDialog(QDialog):
+class TableViewWidget(QWidget):
     def __init__(self, table_name: str, columns: list[str], data: list[list[Any]], parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.setWindowTitle(f"Table: {table_name}")
@@ -70,33 +70,20 @@ class TableViewEditorDialog(QDialog):
         self.table_name = table_name
         self.columns = columns
 
-        # Main vertical splitter for 1:4 layout
+        # Main vertical splitter for 4:1 layout
         splitter = QSplitter(Qt.Orientation.Vertical)
         self.top_widget = QWidget()
         self.bottom_widget = QWidget()
         splitter.addWidget(self.top_widget)
         splitter.addWidget(self.bottom_widget)
-        splitter.setSizes([int(100), int(400)])  # type: ignore
+        splitter.setSizes([int(400), int(100)])  # type: ignore
 
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(splitter)
         self.setLayout(main_layout)
 
-        # --- Top widget: Entry/Edit fields ---
+        # --- Top widget: Table with scroll area ---
         self.input_layout = QHBoxLayout(self.top_widget)
-        self.input_labels: list[QLabel] = []
-        self.input_fields: list[QLineEdit] = []
-        for col in columns:
-            vbox = QVBoxLayout()
-            label = QLabel(col, self.top_widget)
-            field = QLineEdit(self.top_widget)
-            vbox.addWidget(label)
-            vbox.addWidget(field)
-            self.input_labels.append(label)
-            self.input_fields.append(field)
-            self.input_layout.addLayout(vbox)
-        self.hide_input_fields()
-
         top_scroll = QScrollArea(self.top_widget)
         top_inner = QWidget()
         top_inner.setLayout(self.input_layout)
@@ -109,7 +96,6 @@ class TableViewEditorDialog(QDialog):
         top_layout.addWidget(top_scroll)
         self.top_widget.setLayout(top_layout)
 
-        # --- Bottom widget: Table and buttons with scroll area ---
         bottom_layout = QVBoxLayout()
         self.table_view = QTableView(self.bottom_widget)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
@@ -117,8 +103,9 @@ class TableViewEditorDialog(QDialog):
         # Create and set the model
         self.model = CheckBoxTableModel(data, columns, self)
         self.table_view.setModel(self.model)
-        bottom_layout.addWidget(self.table_view)
+        top_layout.addWidget(self.table_view)
 
+        # --- Bottom widget: buttons ---
         btn_layout = QHBoxLayout()
         self.add_btn = QPushButton("Add Entry")
         self.update_btn = QPushButton("Update Entry")
@@ -145,33 +132,14 @@ class TableViewEditorDialog(QDialog):
         bottom_main_layout.addWidget(bottom_scroll)
         self.bottom_widget.setLayout(bottom_main_layout)
 
-    def show_input_fields(self, values: list[str] | None = None):
-        for field in self.input_fields:
-            field.show()
-        for label in self.input_labels:
-            label.show()
-        if values:
-            for field, val in zip(self.input_fields, values):
-                field.setText(str(val))
-        else:
-            for field in self.input_fields:
-                field.clear()
-
-    def hide_input_fields(self):
-        for field in self.input_fields:
-            field.hide()
-        for label in self.input_labels:
-            label.hide()
-
-    def on_checkbox_changed(self):
-        row_data = self.model.get_checked_row()
-        if row_data:
-            self.show_input_fields([str(val) for val in row_data])
-
-    def set_data(self, columns: list[str], data: list[list[Any]]):
+    def set_data(self, columns: list[str], data: list[list[Any]]) -> None:
         """Set new data for the table view."""
         self.columns = columns
         self.model.columns = [""] + columns  # Update checkbox column header
         self.model.data_rows = [[False] + row for row in data]  # Update checkbox state
         self.model.layoutChanged.emit()  # Notify the view to refresh
-        
+
+    def get_checked_row(self) -> Optional[list[Any]]:
+        """Get the currently checked row data."""
+        return self.model.get_checked_row()
+    

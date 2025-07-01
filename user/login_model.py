@@ -33,31 +33,17 @@ class UserModel:
         row = execute_stmt_return(f"SELECT password FROM {T.USERS_TABLE.value} WHERE username = ?", (username,))
         return row[0][0] if row else None  # Return Password. None if user not found
 
-    def get_user_type(self, username: str) -> str:
+    def get_user_type(self, username: str) -> Optional[str]:
         """Get the role of the user based on username."""
         row = execute_stmt_return(f"SELECT user_type FROM {T.USERS_TABLE.value} WHERE username = ?", (username,))
         return row[0][0] if row else None  # Default to '' if user not found
 
     def reset_password(self, username: str, new_password: str) -> bool:
         """Reset the password for a user."""
-        if hasattr(self, "users") and username in self.users:
-            self.users[username] = new_password
-            return True
-        return False
-
-
-    def change_username(self, old_username: str, new_username: str) -> bool:
-        """Change the username of a user."""
-        if hasattr(self, "users") and old_username in self.users and new_username not in self.users:
-            self.users[new_username] = self.users.pop(old_username)
-            return True
-        return False
-
-    def get_user_count(self) -> int:
-        """Get the total number of users."""
-        if hasattr(self, "users"):
-            return len(self.users)
-        return 0
+        result = execute_stmt(
+            f"UPDATE {T.USERS_TABLE.value} SET password = ? WHERE username = ?", (new_password, username)
+        )
+        return result
 
     def is_username_valid(self, username: str) -> bool:
         """Check if the username is valid.""" 
@@ -66,3 +52,4 @@ class UserModel:
         if not username.isalnum():
             return False
         return True
+    

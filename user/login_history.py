@@ -2,105 +2,104 @@
 # Tracks login/logout history for users in the Neyyal Billing System
 
 from datetime import datetime
-from typing import Optional, List
+from typing import List
 from utils.Tables import TableName as T
-from utils.setup_db import create_login_history_table
-from utils.DB_conn import execute_stmt, execute_stmt_return_one, execute_stmt_return
+from utils.DB_conn import SessionLocal
 from user.session import clear_current_session, set_current_session, get_current_user_name
+from sqlalchemy import text
+from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, Integer, String
 
-class LoginHistoryRecord:
+Base = declarative_base()
+
+class LoginHistoryRecord(Base):
     """Represents a single login/logout record."""
-    def __init__(self, session_id: int, username: str, login_time: str, logout_time: Optional[str]):
-        self.session_id = session_id
-        self.username = username
-        self.login_time = login_time
-        self.logout_time = logout_time
+    __tablename__ = T.LOGIN_HISTORY_TABLE.value  # Use the table name from the enum
+    session_id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String, nullable=False)
+    login_time = Column(String, nullable=False)
+    logout_time = Column(String, nullable=True)
 
-    def __repr__(self):
-        return (f"LoginHistoryRecord(session_id={self.session_id}, username='{self.username}', "
-                f"login_time='{self.login_time}', logout_time='{self.logout_time}')")
-
+    def as_list(self) -> List[str | int | None]:
+        """Convert the record to a list for easy display."""
+        return [
+            getattr(self, "session_id", None),
+            getattr(self, "username", None),
+            getattr(self, "login_time", None),
+            getattr(self, "logout_time", None)
+        ]
+    
 class LoginHistory:
     """Handles login/logout history operations."""
 
     def __init__(self):
         """Initialize the LoginHistory class and create the login history table if it doesn't exist."""
-        create_login_history_table()
+        pass  # Table creation is handled in setup_db.py
 
-    def record_login(self, username: str) -> int:
+    @staticmethod
+    def record_login(username: str) -> int:
         """Record a user login event with the current timestamp and return the session_id."""
         login_time = datetime.now().isoformat(sep=' ', timespec='seconds')
-        execute_stmt(f'''
-            INSERT INTO {T.LOGIN_HISTORY_TABLE.value} (username, login_time, logout_time)
-            VALUES (?, ?, NULL)
-            ''', (username, login_time))
-        result = execute_stmt_return_one(f'''
-            SELECT session_id FROM {T.LOGIN_HISTORY_TABLE.value}
-            WHERE username = ? AND login_time = ?
-            ORDER BY session_id DESC LIMIT 1
-            ''', (username, login_time))
-        if result and result[0]:
-            session_id: int = result[0]
-            set_current_session(username, session_id)
-            return session_id
-        else:
-            raise ValueError("Failed to retrieve session_id for the login event.")
+        user = LoginHistoryRecord(username=username, login_time=login_time)
+        with SessionLocal() as session:
+            try:
+                session.add(user)
+                session.commit()
+                return True
+            except Exception:
+                session.rollback()
+                return False
+        with SessionLocal() as session:
+            # Retrieve the session_id for the newly created login event
+            result = (
+                session.query(LoginHistoryRecord.session_id)
+                .filter(
+                    LoginHistoryRecord.username == username,
+                    LoginHistoryRecord.login_time == login_time
+                )
+                .order_by(LoginHistoryRecord.session_id.desc())
+                .limit(1)
+                .first()
+            )
+            if result and result[0]:
+                session_id: int = result[0]
+                set_current_session(username, session_id)
+                return session_id
+            else:
+                raise ValueError("Failed to retrieve session_id for the login event.")
 
     @staticmethod
     def record_logout(session_id: int) -> None:
         """Record a user logout event with the current timestamp."""
         clear_current_session()  # Clear the current session_id
         logout_time = datetime.now().isoformat(sep=' ', timespec='seconds')
-        if execute_stmt(f'''
-                UPDATE {T.LOGIN_HISTORY_TABLE.value}
-                SET logout_time = ?
-                WHERE session_id = ? AND logout_time IS NULL
-            ''', (logout_time, session_id)) is False:
-            raise ValueError(f"Logout Failed! Failed for the User: {get_current_user_name()} (session_id={session_id})")
+        with SessionLocal() as session:
+            # Update the logout_time for the given session_id
+            rowcount = session.query(LoginHistoryRecord).filter_by(session_id=session_id).update(
+                {"logout_time": logout_time}
+            )
+            session.commit()
+            if rowcount == 0:
+                raise ValueError(f"Logout Failed! Failed for the User: {get_current_user_name()} (session_id={session_id})")
 
     def get_user_history(self, username: str) -> List[LoginHistoryRecord]:
         """Retrieve the login/logout history for a given user as a list of LoginHistoryRecord objects."""
-        rows = execute_stmt_return(f'''
-                SELECT session_id, username, login_time, logout_time FROM {T.LOGIN_HISTORY_TABLE.value}
-                WHERE username = ? ORDER BY session_id DESC
-            ''', (username,))
-        return [
-            LoginHistoryRecord(
-                session_id=int(row[0]),
-                username=str(row[1]) if row[1] is not None else "",
-                login_time=str(row[2]) if len(row) > 2 and row[2] is not None else "",
-                logout_time=str(row[3]) if len(row) > 3 and row[3] is not None else None
-            )
-            for row in rows if len(row) >= 4
-        ]
+        with SessionLocal() as session:
+            return session.query(LoginHistoryRecord).filter_by(username=username).order_by(LoginHistoryRecord.session_id.desc()).all()
 
     def get_all_history(self) -> List[LoginHistoryRecord]:
         """Retrieve the complete login/logout history for all users as a list of LoginHistoryRecord objects."""
-        rows = execute_stmt_return(f'''
-                SELECT session_id, username, login_time, logout_time FROM {T.LOGIN_HISTORY_TABLE.value}
-                ORDER BY session_id DESC
-            ''')
-        return [
-            LoginHistoryRecord(
-                session_id=int(row[0]),
-                username=str(row[1]) if row[1] is not None else "",
-                login_time=str(row[2]) if len(row) > 2 and row[2] is not None else "",
-                logout_time=str(row[3]) if len(row) > 3 and row[3] is not None else None
-            )
-            for row in rows if len(row) >= 4
-        ]
+        with SessionLocal() as session:
+            return session.query(LoginHistoryRecord).order_by(LoginHistoryRecord.session_id.desc()).all()
 
     def clear_history(self) -> None:
         """Clear the login/logout history table."""
-        execute_stmt(f'DELETE FROM {T.LOGIN_HISTORY_TABLE.value}')
+        with SessionLocal() as session:
+            session.execute(text(f'DELETE FROM {T.LOGIN_HISTORY_TABLE.value}'))
+            session.commit()
         print("Login history cleared.")
 
     def get_login_history_as_list(self) -> List[List[str]]:
         """Get the login history as a list of lists for easy display."""
         history = self.get_all_history()
-        return [[
-            str(record.session_id),
-            record.username,
-            record.login_time,
-            record.logout_time if record.logout_time else ""
-        ] for record in history]
+        return [[str(value) if value is not None else "" for value in record.as_list()] for record in history] if history else []

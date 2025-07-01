@@ -5,9 +5,14 @@ import sqlite3
 import logging
 from typing import Any
 from configuration import DB_PATH
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+
+engine = create_engine(f"sqlite:///{DB_PATH}", echo=False, future=True)
+SessionLocal = sessionmaker(bind=engine)
 
 def execute_stmt(stmt: str, params: tuple[Any, ...] = ()) -> bool:
     """
